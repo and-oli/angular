@@ -571,18 +571,28 @@ function executeOnDestroys(tView: TView, lView: LView): void {
           for (let j = 0; j < toCall.length; j += 2) {
             const callContext = context[toCall[j] as number];
             const hook = toCall[j + 1] as HookFn;
+            performance.mark('hook_start');
             profiler(ProfilerEvent.LifecycleHookStart, callContext, hook);
             try {
               hook.call(callContext);
             } finally {
+              const start = 'hook_start';
+              const end = 'hook_end';
+              performance.mark(end);
+              performance.measure('hook', start, end);
               profiler(ProfilerEvent.LifecycleHookEnd, callContext, hook);
             }
           }
         } else {
+          performance.mark('hook_start');
           profiler(ProfilerEvent.LifecycleHookStart, context, toCall);
           try {
             toCall.call(context);
           } finally {
+            const start = 'hook_start';
+            const end = 'hook_end';
+            performance.mark(end);
+            performance.measure('hook', start, end);
             profiler(ProfilerEvent.LifecycleHookEnd, context, toCall);
           }
         }
