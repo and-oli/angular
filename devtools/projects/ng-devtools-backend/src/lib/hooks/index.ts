@@ -34,22 +34,7 @@ const endMark = (nodeName: string, method: Method) => {
     if (performance.getEntriesByName(start).length > 0) {
       // tslint:disable-next-line:ban
       performance.mark(end);
-
-      const measureOptions = {
-        start,
-        end,
-        detail: {
-          devtools: {
-            metadata: {
-              dataType: 'track-entry',
-              extensionName: 'Angular',
-            },
-            color: 'primary',
-            track: '🅰️ Angular DevTools',
-          },
-        },
-      };
-      performance.measure(name, measureOptions);
+      performance.measure(name, start, end);
     }
     performance.clearMarks(start);
     performance.clearMarks(end);

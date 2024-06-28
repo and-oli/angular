@@ -265,6 +265,7 @@ function executeListenerWithErrorHandling(
 ): boolean {
   const prevConsumer = setActiveConsumer(null);
   try {
+    performance.mark('output_start');
     profiler(ProfilerEvent.OutputStart, context, listenerFn);
     // Only explicitly returning false from a listener should preventDefault
     return listenerFn(e) !== false;
@@ -272,6 +273,24 @@ function executeListenerWithErrorHandling(
     handleError(lView, error);
     return false;
   } finally {
+    const start = 'output_start';
+    const end = 'output_end';
+    performance.mark(end);
+    const measureOptions = {
+      start,
+      end,
+      detail: {
+        devtools: {
+          metadata: {
+            dataType: 'track-entry',
+            extensionName: 'Angular',
+          },
+          color: 'primary',
+          track: '🅰️ Angular DevTools',
+        },
+      },
+    };
+    performance.measure('output', measureOptions);
     profiler(ProfilerEvent.OutputEnd, context, listenerFn);
     setActiveConsumer(prevConsumer);
   }

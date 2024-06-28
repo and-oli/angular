@@ -428,6 +428,7 @@ export function executeTemplate<T>(
       ? ProfilerEvent.TemplateUpdateStart
       : ProfilerEvent.TemplateCreateStart;
     profiler(preHookType, context as unknown as {});
+    performance.mark('template_start');
     templateFn(rf, context);
   } finally {
     setSelectedIndex(prevSelectedIndex);
@@ -435,6 +436,25 @@ export function executeTemplate<T>(
     const postHookType = isUpdatePhase
       ? ProfilerEvent.TemplateUpdateEnd
       : ProfilerEvent.TemplateCreateEnd;
+    const start = 'template_start';
+    const end = 'template_end';
+    performance.mark(end);
+    const measureOptions = {
+      start,
+      end,
+      detail: {
+        devtools: {
+          metadata: {
+            dataType: 'track-entry',
+            extensionName: 'Angular',
+          },
+          color: 'primary',
+          track: '🅰️ Angular DevTools',
+        },
+      },
+    };
+    performance.measure('template', measureOptions);
+
     profiler(postHookType, context as unknown as {});
   }
 }

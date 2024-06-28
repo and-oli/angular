@@ -283,12 +283,31 @@ function callHooks(
  * - profiling data are registered.
  */
 function callHookInternal(directive: any, hook: () => void) {
+  performance.mark('hook_start');
   profiler(ProfilerEvent.LifecycleHookStart, directive, hook);
   const prevConsumer = setActiveConsumer(null);
   try {
     hook.call(directive);
   } finally {
     setActiveConsumer(prevConsumer);
+    const start = 'hook_start';
+    const end = 'hook_end';
+    performance.mark(end);
+    const measureOptions = {
+      start,
+      end,
+      detail: {
+        devtools: {
+          metadata: {
+            dataType: 'track-entry',
+            extensionName: 'Angular',
+          },
+          color: 'primary',
+          track: '🅰️ Angular DevTools',
+        },
+      },
+    };
+    performance.measure('hook', measureOptions);
     profiler(ProfilerEvent.LifecycleHookEnd, directive, hook);
   }
 }
